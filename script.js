@@ -77,3 +77,21 @@ window.login = async (email, password) => {
 window.logout = async () => {
   await signOut(auth);
 };
+
+const authModal = document.getElementById("authModal");
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+
+loginBtn.addEventListener("click", async () => {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  await login(email, password);
+  authModal.classList.remove("show");
+});
+
+signupBtn.addEventListener("click", async () => {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  await signup(email, password);
+  authModal.classList.remove("show");
+});
