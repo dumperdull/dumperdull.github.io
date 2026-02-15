@@ -23,9 +23,18 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <h2 class="logo">🎮 gn-sci</h2>
+  <h2 class="logo">🎮 gn-sci</h2>
+
+  <div class="nav-right">
+    <div class="token-display" id="tokenDisplay">
+      🪙 <span id="tokenAmount">0</span>
+      <button class="token-plus" id="buyTokensBtn">+</button>
+    </div>
+
     <button class="theme-toggle" id="themeToggle">🌙</button>
-  </nav>
+  </div>
+</nav>
+
 
   <!-- HEADER -->
   <header>
@@ -224,6 +233,15 @@
   </footer>
 
   <script src="script.js"></script>
+  <!-- BUY TOKENS MODAL -->
+<div class="modal" id="buyModal">
+  <div class="modal-content">
+    <h2>Buy Tokens</h2>
+    <p>Token packages coming soon.</p>
+    <button id="closeModal">Close</button>
+  </div>
+</div>
+
 </body>
 </html>  
 
