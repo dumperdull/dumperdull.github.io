@@ -32,4 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
     particle.style.animationDelay = `${Math.random() * 15}s`;
     particleContainer.appendChild(particle);
   }
+
+  // 💰 Buy Tokens Modal
+const buyBtn = document.getElementById("buyTokensBtn");
+const modal = document.getElementById("buyModal");
+const closeModal = document.getElementById("closeModal");
+
+buyBtn.addEventListener("click", () => {
+  modal.classList.add("show");
+});
+
+closeModal.addEventListener("click", () => {
+  modal.classList.remove("show");
+});
+
 });
