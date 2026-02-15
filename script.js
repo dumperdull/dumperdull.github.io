@@ -1,49 +1,79 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // 🌙 Dark Mode Toggle
-  const toggleBtn = document.getElementById("themeToggle");
-  const searchInput = document.getElementById("searchInput");
-  const gameLinks = document.querySelectorAll(".game-link");
+// 🔥 Firebase Imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut,
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("light");
-    toggleBtn.textContent = document.body.classList.contains("light") ? "☀️" : "🌙";
-  });
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc,
+  updateDoc 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // 🔍 Search Filter
-  searchInput.addEventListener("input", (e) => {
-    const search = e.target.value.toLowerCase();
-    gameLinks.forEach(link => {
-      link.style.display = link.textContent.toLowerCase().includes(search) ? "" : "none";
-    });
-  });
+// 🔥 Your Config
+const firebaseConfig = {
+  apiKey: "PASTE",
+  authDomain: "PASTE",
+  projectId: "PASTE",
+  storageBucket: "PASTE",
+  messagingSenderId: "PASTE",
+  appId: "PASTE"
+};
 
-  // 🌟 Particle Animation
-  const particleContainer = document.getElementById("particle-container");
-  const numParticles = 60; // Number of floating dots
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  for (let i = 0; i < numParticles; i++) {
-    const particle = document.createElement("div");
-    particle.classList.add("particle");
-    particle.style.left = `${Math.random() * 100}vw`;
-    particle.style.top = `${Math.random() * 100}vh`;
-    particle.style.width = `${Math.random() * 4 + 2}px`;
-    particle.style.height = particle.style.width;
-    particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
-    particle.style.animationDelay = `${Math.random() * 15}s`;
-    particleContainer.appendChild(particle);
+// ----------------------------
+// TOKEN UI REFERENCES
+// ----------------------------
+
+const tokenAmountEl = document.getElementById("tokenAmount");
+const tokenDisplay = document.getElementById("tokenDisplay");
+
+// ----------------------------
+// AUTH STATE
+// ----------------------------
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        tokens: 0,
+        createdAt: new Date()
+      });
+      tokenAmountEl.textContent = 0;
+    } else {
+      tokenAmountEl.textContent = userSnap.data().tokens;
+    }
+
+    tokenDisplay.style.display = "flex";
+  } else {
+    tokenDisplay.style.display = "none";
   }
-
-  // 💰 Buy Tokens Modal
-const buyBtn = document.getElementById("buyTokensBtn");
-const modal = document.getElementById("buyModal");
-const closeModal = document.getElementById("closeModal");
-
-buyBtn.addEventListener("click", () => {
-  modal.classList.add("show");
 });
 
-closeModal.addEventListener("click", () => {
-  modal.classList.remove("show");
-});
+// ----------------------------
+// SIMPLE LOGIN SYSTEM
+// ----------------------------
 
-});
+window.signup = async (email, password) => {
+  await createUserWithEmailAndPassword(auth, email, password);
+};
+
+window.login = async (email, password) => {
+  await signInWithEmailAndPassword(auth, email, password);
+};
+
+window.logout = async () => {
+  await signOut(auth);
+};
