@@ -3,89 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GN-Sci Portal</title>
+  <title>GN Sci</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Particle background -->
+  <!-- Particle Background -->
   <div id="particle-container"></div>
 
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">GN-Sci</div>
+    <div class="logo">GN Sci</div>
     <div class="nav-right">
       <div id="tokenDisplay" class="token-display">
-        <span id="tokenAmount">0</span> 💰
+        <span id="tokenAmount">0</span>
         <button id="buyTokensBtn" class="token-plus">+</button>
       </div>
-      <button class="theme-toggle" id="themeToggle">🌗</button>
+      <button id="themeToggle" class="theme-toggle">🌙</button>
     </div>
   </nav>
 
   <!-- Header -->
   <header>
-    <h1>Welcome to GN-Sci</h1>
-    <h3>Play, Earn, and Explore Science & Games</h3>
-    <p class="note">Click the 💰 icon to check your tokens or buy more!</p>
+    <h1>Welcome to GN Sci</h1>
+    <h3>Your hub for fun games and tokens!</h3>
+    <p class="note">Sign up or log in to start earning tokens and play all the games!</p>
   </header>
 
   <!-- Search Bar -->
-  <input type="text" class="search-bar" placeholder="Search games..." id="searchBar">
+  <input type="text" placeholder="Search games..." class="search-bar" id="searchBar">
 
   <!-- Announcements -->
   <section class="announcements">
     <h2>Announcements</h2>
-    <div class="important-announcement">Server Maintenance Tomorrow at 4 PM!</div>
+    <div class="important-announcement">Server maintenance scheduled tomorrow!</div>
     <div class="announcements-list">
-      <p><span class="update-date">Feb 15:</span> New game "Red Ball Challenge" added!</p>
-      <p><span class="update-date">Feb 10:</span> Tokens system fully live.</p>
+      <p>New game added: <b>Green Ball</b></p>
+      <p class="archived-item">Old event: Red vs Blue tournament</p>
     </div>
   </section>
 
   <!-- Game List -->
-  <main class="game-list">
-    <a href="#" class="game-link">
-      <img src="redball.png" class="game-icon" alt="Red Ball">
-      Red Ball Challenge
-    </a>
-    <a href="#" class="game-link">
-      <img src="bluecube.png" class="game-icon" alt="Blue Cube">
-      Blue Cube Adventure
-    </a>
-    <!-- Add more game links here -->
+  <main>
+    <div class="game-list">
+      <a href="#" class="game-link">
+        <img src="redball.png" class="game-icon" alt="Red Ball">
+        Red Ball
+      </a>
+      <a href="#" class="game-link">
+        <img src="blueball.png" class="game-icon" alt="Blue Ball">
+        Blue Ball
+      </a>
+      <a href="#" class="game-link">
+        <img src="greenball.png" class="game-icon" alt="Green Ball">
+        Green Ball
+      </a>
+      <a href="#" class="game-link">
+        <img src="yellowball.png" class="game-icon" alt="Yellow Ball">
+        Yellow Ball
+      </a>
+      <!-- Add more games as you have them -->
+    </div>
   </main>
+
+  <!-- Change Log -->
+  <section class="changelog">
+    <h2>Change Log</h2>
+    <div class="changelog-list">
+      <p><span class="change-date">2026-02-15:</span> Added Green Ball game.</p>
+      <p><span class="change-date">2026-02-10:</span> Fixed token display bug.</p>
+    </div>
+  </section>
 
   <!-- Footer -->
   <footer>
-    &copy; 2026 GN-Sci | Built with 💛
+    © 2026 GN Sci. All rights reserved.
   </footer>
 
-  <!-- --------------------------
-       Modals
-  -------------------------- -->
-
   <!-- Auth Modal -->
-  <div class="modal" id="authModal">
+  <div id="authModal" class="modal">
     <div class="modal-content">
-      <h2>Login / Sign Up</h2>
-      <input type="email" id="authEmail" placeholder="Email" style="margin-bottom:10px; width:100%; padding:8px; border-radius:8px; border:none;">
-      <input type="password" id="authPassword" placeholder="Password" style="margin-bottom:10px; width:100%; padding:8px; border-radius:8px; border:none;">
-      <button id="loginBtn" style="margin-right:10px; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">Login</button>
-      <button id="signupBtn" style="padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">Sign Up</button>
+      <h2>Sign In / Sign Up</h2>
+      <input type="email" id="authEmail" placeholder="Email">
+      <input type="password" id="authPassword" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <button id="signupBtn">Sign Up</button>
+      <button id="closeAuthModal">Close</button>
     </div>
   </div>
 
   <!-- Buy Tokens Modal -->
-  <div class="modal" id="buyModal">
+  <div id="buyModal" class="modal">
     <div class="modal-content">
       <h2>Buy Tokens</h2>
-      <p>Click anywhere below to add 10 tokens (testing)</p>
-      <button id="closeModal" style="margin-top:15px; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">Close</button>
+      <p>Click below to add 10 tokens (testing)</p>
+      <button id="buyConfirmBtn">Add Tokens</button>
+      <button id="closeBuyModal">Close</button>
     </div>
   </div>
 
-  <!-- Firebase JS -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
