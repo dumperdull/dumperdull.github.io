@@ -2,65 +2,92 @@
 <html lang="en">
 <head>
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJDDTMFGZG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJDDTMFGZG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GJDDTMFGZG');
+  </script>
 
-  gtag('config', 'G-GJDDTMFGZG');
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gn-sci</title>
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css" />
+
 </head>
+
 <body>
-  <!-- PARTICLE BACKGROUND -->
+
+  <!-- PARTICLES -->
   <div id="particle-container"></div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
-  <h2 class="logo">🎮 gn-sci</h2>
+    <h2 class="logo">🎮 gn-sci</h2>
 
-  <div class="nav-right">
-    <div class="token-display" id="tokenDisplay">
-      🪙 <span id="tokenAmount">0</span>
-      <button class="token-plus" id="buyTokensBtn">+</button>
+    <div class="nav-right">
+
+      <!-- TOKEN DISPLAY -->
+      <div class="token-display" id="tokenDisplay">
+        🪙 <span id="tokenAmount">0</span>
+        <button class="token-plus" id="buyTokensBtn">+</button>
+      </div>
+
+      <!-- THEME TOGGLE -->
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+
     </div>
-
-    <button class="theme-toggle" id="themeToggle">🌙</button>
-  </div>
-</nav>
+  </nav>
 
 
   <!-- HEADER -->
   <header>
     <h1>Welcome to <span class="highlight">gn-sci</span>!</h1>
-   <h3>Last updated: Jan 30, 2026</h3>
+    <h3>Last updated: Jan 30, 2026</h3>
     <br>
-    <a href="https://discord.gg/RmUqgTDccE">Join the discord! (Highly recommended!)</a>
+    <a href="https://discord.gg/RmUqgTDccE" target="_blank">
+      Join the Discord (Highly recommended!)
+    </a>
   </header>
 
-  <!-- SEARCH BAR -->
-  <input type="text" class="search-bar" placeholder="Search any game..." id="searchInput">
+
+  <!-- SEARCH -->
+  <input 
+    type="text" 
+    class="search-bar" 
+    placeholder="Search any game..." 
+    id="searchInput"
+  >
+
 
   <!-- ANNOUNCEMENTS -->
   <section class="announcements">
     <h2>📣 Announcements</h2>
+
     <p class="important-announcement">
-      Spring updage + giveaway on March 1st! Join the discord to join the giveaway and for more info   </p>
-<div class="announcements-list">
-      <p><span class="update-date">Jan 16, 2026:</span> Spring update coming soon... check our Discord for more development information</p>
+      Spring update + giveaway on March 1st!
+      Join the Discord for more info.
+    </p>
+
+    <div class="announcements-list">
+      <p>
+        <span class="update-date">Jan 16, 2026:</span>
+        Spring update coming soon... check Discord for development info.
+      </p>
     </div>
   </section>
+
 
   <!-- GAME LIST -->
   <main>
     <section class="game-list" id="gameList">
-      <a class="game-link" href="gdash/">Geometry Dash
+
+      <!-- Example games (keep adding yours below) -->
+
+     <a class="game-link" href="gdash/">Geometry Dash
         <img src="icons/geodash.jpg">
       </a>
       <a class="game-link" href="templerun2/">Temple Run 2
@@ -213,47 +240,49 @@
       <a class="game-link" href="RagHit.html">Ragdoll Archers</a>
       <a class="game-link" href="RagArch.html">Ragdoll Hit</a>
 
-      <br>
-      <br>
-      
-      
-      <!--
-<a class="game-link" href=" /"> </a>
-      -->
-      
     </section>
-
-<!-- CHANGELOG -->
-
   </main>
+
 
   <!-- FOOTER -->
   <footer>
-    <p>&copy; 2025 The gn-sci Foundation. All rights reserved.</p>
+    <p>&copy; 2026 The gn-sci Foundation. All rights reserved.</p>
   </footer>
 
-<script type="module" src="script.js"></script>
+
+  <!-- ========================= -->
   <!-- BUY TOKENS MODAL -->
-<div class="modal" id="buyModal">
-  <div class="modal-content">
-    <h2>Buy Tokens</h2>
-    <p>Token packages coming soon.</p>
-    <button id="closeModal">Close</button>
-  </div>
-</div>
+  <!-- ========================= -->
 
-<!-- AUTH MODAL -->
-<div class="modal" id="authModal">
-  <div class="modal-content">
-    <h2>Login / Sign Up</h2>
-    <input type="email" id="authEmail" placeholder="Email"><br><br>
-    <input type="password" id="authPassword" placeholder="Password"><br><br>
-    <button id="loginBtn">Login</button>
-    <button id="signupBtn">Sign Up</button>
+  <div class="modal" id="buyModal">
+    <div class="modal-content">
+      <h2>Buy Tokens</h2>
+      <p>Token packages coming soon.</p>
+      <button id="closeModal">Close</button>
+    </div>
   </div>
-</div>
 
-  
+
+  <!-- ========================= -->
+  <!-- AUTH MODAL -->
+  <!-- ========================= -->
+
+  <div class="modal" id="authModal">
+    <div class="modal-content">
+      <h2>Login / Sign Up</h2>
+
+      <input type="email" id="authEmail" placeholder="Email"><br><br>
+      <input type="password" id="authPassword" placeholder="Password"><br><br>
+
+      <button id="loginBtn">Login</button>
+      <button id="signupBtn">Sign Up</button>
+
+    </div>
+  </div>
+
+
+  <!-- SCRIPT -->
+  <script type="module" src="script.js"></script>
+
 </body>
-</html>  
-
+</html>
