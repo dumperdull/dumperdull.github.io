@@ -1,259 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJDDTMFGZG"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GJDDTMFGZG');
-  </script>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>gn-sci</title>
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
 
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDoc, updateDoc 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // ----------------------------
+    // Firebase Config
+    // ----------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyDV9R-csa_sdepCy0kt8e8yhZHz77HxY9w",
+      authDomain: "gn-sci.firebaseapp.com",
+      projectId: "gn-sci",
+      storageBucket: "gn-sci.firebasestorage.app",
+      messagingSenderId: "415043872292",
+      appId: "1:415043872292:web:a9dd0a06270e4f83db1ab1",
+      measurementId: "G-HGXJGSGPZC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ----------------------------
+    // DOM References
+    // ----------------------------
+    const tokenAmountEl = document.getElementById("tokenAmount");
+    const tokenDisplay = document.getElementById("tokenDisplay");
+    const buyTokensBtn = document.getElementById("buyTokensBtn");
+    const buyModal = document.getElementById("buyModal");
+    const closeModal = document.getElementById("closeModal");
+    const authModal = document.getElementById("authModal");
+    const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+
+    // ----------------------------
+    // AUTH STATE
+    // ----------------------------
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, { tokens: 0, createdAt: new Date() });
+          tokenAmountEl.textContent = 0;
+        } else {
+          tokenAmountEl.textContent = userSnap.data().tokens;
+        }
+
+        tokenDisplay.style.display = "flex";
+      } else {
+        tokenDisplay.style.display = "none";
+      }
+    });
+
+    // ----------------------------
+    // AUTH FUNCTIONS
+    // ----------------------------
+    async function signup(email, password) {
+      await createUserWithEmailAndPassword(auth, email, password);
+    }
+
+    async function login(email, password) {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+
+    async function logout() {
+      await signOut(auth);
+    }
+
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const password = document.getElementById("authPassword").value;
+      await login(email, password);
+      authModal.classList.remove("show");
+    });
+
+    signupBtn.addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const password = document.getElementById("authPassword").value;
+      await signup(email, password);
+      authModal.classList.remove("show");
+    });
+
+    // ----------------------------
+    // BUY TOKENS BUTTON
+    // ----------------------------
+    buyTokensBtn.addEventListener("click", () => {
+      buyModal.classList.add("show");
+    });
+    closeModal.addEventListener("click", () => {
+      buyModal.classList.remove("show");
+    });
+
+    // ----------------------------
+    // THEME TOGGLE
+    // ----------------------------
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+    });
+
+    // ----------------------------
+    // PARTICLE BACKGROUND
+    // ----------------------------
+    const particleContainer = document.getElementById("particle-container");
+    for(let i=0; i<50; i++){
+      const p = document.createElement("div");
+      p.className = "particle";
+      p.style.left = Math.random()*100 + "vw";
+      p.style.animationDuration = 5+Math.random()*5 + "s";
+      p.style.width = p.style.height = 2+Math.random()*4 + "px";
+      particleContainer.appendChild(p);
+    }
+  </script>
 </head>
-
 <body>
 
-  <!-- PARTICLES -->
+  <!-- PARTICLE BACKGROUND -->
   <div id="particle-container"></div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
     <h2 class="logo">🎮 gn-sci</h2>
-
     <div class="nav-right">
-
-      <!-- TOKEN DISPLAY -->
       <div class="token-display" id="tokenDisplay">
         🪙 <span id="tokenAmount">0</span>
         <button class="token-plus" id="buyTokensBtn">+</button>
       </div>
-
-      <!-- THEME TOGGLE -->
       <button class="theme-toggle" id="themeToggle">🌙</button>
-
     </div>
   </nav>
-
 
   <!-- HEADER -->
   <header>
     <h1>Welcome to <span class="highlight">gn-sci</span>!</h1>
     <h3>Last updated: Jan 30, 2026</h3>
     <br>
-    <a href="https://discord.gg/RmUqgTDccE" target="_blank">
-      Join the Discord (Highly recommended!)
-    </a>
+    <button onclick="authModal.classList.add('show')">Login / Sign Up</button>
+    <br><br>
+    <a href="https://discord.gg/RmUqgTDccE">Join the Discord!</a>
   </header>
 
-
-  <!-- SEARCH -->
-  <input 
-    type="text" 
-    class="search-bar" 
-    placeholder="Search any game..." 
-    id="searchInput"
-  >
-
-
-  <!-- ANNOUNCEMENTS -->
-  <section class="announcements">
-    <h2>📣 Announcements</h2>
-
-    <p class="important-announcement">
-      Spring update + giveaway on March 1st!
-      Join the Discord for more info.
-    </p>
-
-    <div class="announcements-list">
-      <p>
-        <span class="update-date">Jan 16, 2026:</span>
-        Spring update coming soon... check Discord for development info.
-      </p>
-    </div>
-  </section>
-
+  <!-- SEARCH BAR -->
+  <input type="text" class="search-bar" placeholder="Search any game..." id="searchInput">
 
   <!-- GAME LIST -->
   <main>
     <section class="game-list" id="gameList">
-
-      <!-- Example games (keep adding yours below) -->
-
-     <a class="game-link" href="gdash/">Geometry Dash
-        <img src="icons/geodash.jpg">
-      </a>
-      <a class="game-link" href="templerun2/">Temple Run 2
-        <img src="icons/templerun2.jpg">
-      </a>
-      <a class="game-link" href="swaves/">Space Waves
-        <img src="icons/spacewaves.jpg">
-      </a>
-      <a class="game-link" href="motosl/">Moto Spooky Land
-        <img src="icons/motosl.jpg">
-      </a>
-      <a class="game-link" href="moto3/">Moto 3
-        <img src="icons/moto3.jpg">
-      </a>
-      <a class="game-link" href="emulator/">Emulator</a>
-      <a class="game-link" href="cookieclicker/">Cookie Clicker
-        <img src="icons/cc.jpg">
-      </a>
-      <a class="game-link" href="fnf/">Friday Night Funkin
-        <img src="icons/fnf.jpg">
-      </a>
-      <a class="game-link" href="vex8/">Vex 8
-        <img src="icons/vex8.jpg">
-      </a>
-      <a class="game-link" href="undertale/">Undertale Yellow
-        <img src="icons/undertale.png">
-      </a>
-      <a class="game-link" href="balltrack/">Balltrack
-        <img src="icons/balltrack.jpg">
-      </a>
-      <a class="game-link" href="ninjaVSevil/">Ninja Vs. Evilcorp
-        <img src="icons/ninjaVSevil.jpg">
-      </a>
-      <a class="game-link" href="paper.io/">Paper.io
-        <img src="icons/paper.jpeg">
-      </a>
-      <a class="game-link" href="WHG/">World's Hardest Game
-        <img src="icons/whg.jpg">
-      </a>
-      <a class="game-link" href="WHG3/">World's Hardest Game 3
-        <img src="icons/whg3.jpg">
-      </a>
-      <a class="game-link" href="titol/">This is the Only Level
-        <img src="icons/titol.jpeg">
-      </a>
-      <a class="game-link" href="tinyfishing/">Tiny Fishing
-        <img src="icons/tinyfishing.png">
-      </a>
-      <a class="game-link" href="ttm/">Tomb of the Mask
-        <img src="icons/totm.png">
-      </a>
-      <a class="game-link" href="stickman hook/">Stickman Hook
-        <img src="icons/stickman.jpg">
-      </a>
-      <a class="game-link" href="tubejumpers/tube">Tube Jumpers
-        <img src="icons/tubejumpers.jpg">
-      </a>
-      <a class="game-link" href="emulator2/">Emulator (built in games)</a>
-      <a class="game-link" href="8ballpool/">8 Ball Pool
-        <img src="icons/8bp.jpg">
-      </a>
-      <a class="game-link" href="solar smash/">Solar Smash
-        <img src="icons/solarsmash.jpg">
-      </a>
-      <a class="game-link" href="snowrider/">Snow Rider
-        <img src="icons/snowrider.jpg">
-      </a>
-      <a class="game-link" href="subway surfers/">Subway Surfers
-        <img src="icons/subwaysurfers.jpg">
-      </a>
-      <a class="game-link" href="brawlguys/">Brawlguys.io</a>
-      <a class="game-link" href="slice.io/">Slice.io
-        <img src="icons/slice.io/jpg">
-      </a>
-      <a class="game-link" href="motopp/">Moto Pool Party</a>
-      <a class="game-link" href="granny2/">Granny 2
-        <img src="icons/granny.jpg">
-      </a>
-      <a class="game-link" href="survivalrace/">Survival Race</a>
-      <a class="game-link" href="briderace/">Bridge Race</a>
-      <a class="game-link" href="hole.io/">Hole.io</a>
-      <a class="game-link" href="colorsort/">Color Sort</a>
-      <a class="game-link" href="chess/">Chess Classic</a>
-      <a class="game-link" href="flappydunk/">Flappy Dunk</a>
-      <a class="game-link" href="state.io/">State.io</a>
-      <a class="game-link" href="forknsauce/">ForkNSausage</a>
-      <a class="game-link" href="harvest.io/">Harvest.io</a>
-      <a class="game-link" href="HCR/">Hill Climb Racing</a>
-      <a class="game-link" href="race master/">Race Master</a>
-      <a class="game-link" href="towercrash/">Tower Crash 3D</a>
-      <a class="game-link" href="crazy cattle/">Crazy Cattle 3D</a>
-      <a class="game-link" href="badparenting/">Bad Parenting 1</a>
-      <a class="game-link" href="bladeball/">Blade Ball</a>
-      <a class="game-link" href="blockysnakes/">Blocky Snakes</a>
-      <a class="game-link" href="bloxorz/">Bloxorz</a>
-      <a class="game-link" href="magictiles/">Magic tiles</a>
-      <a class="game-link" href="btts2/">Big Tower Tiny Square 2</a>
-      <a class="game-link" href="candy crush/">Candy Crush</a>
-      <a class="game-link" href="melonplayground/">Melon Playground</a>
-      <a class="game-link" href="world box/">WorldBox</a>
-      <a class="game-link" href="run/">Run</a>
-      <a class="game-link" href="n-gon/">N-Gon</a>
-      <a class="game-link" href="minecraft/">Minecraft</a>
-      <a class="game-link" href="FNAF/">FNAF World</a>
-      <a class="game-link" href="dnttch/">Do Not Take This Cat Home</a>
-      <a class="game-link" href="REPO/">R.E.P.O</a>
-      <a class="game-link" href="ULTRAKILL/">ULTRAKILL</a>
-      <a class="game-link" href="ovo2/">OvO 2</a>
-      <a class="game-link" href="timeshooter/">Time Shooter</a>
-      <a class="game-link" href="timeshooterswat/">Time Shooter SWAT</a>
-      <a class="game-link" href="buckshot/">Buckshot Roulette</a>
-      <a class="game-link" href="tunnelrush/">Tunnel Rush</a>
-      <a class="game-link" href="drawthehill/">Draw the Hill</a>
-      <a class="game-link" href="jetpack/">Jetpack Joyride</a>
-      <a class="game-link" href="mobcontrol/">Mob Control</a>
-      <a class="game-link" href="death run/">Death Run</a>
-      <a class="game-link" href="very fun I swear/">Trust the proccess</a>
-      <a class="game-link" href="pou/">Pou</a>
-      <a class="game-link" href="freezeria/">Papa's Freezeria</a> 
-      <a class="game-link" href="https://reimagined-couscous-wrxw45wrq9pp2r4v-8080.app.github.dev/">Proxy (lmk if u want me to turn it on)</a>
-      <a class="game-link" href="wingeria/">Papa's Wingeria</a>
-      <a class="game-link" href="plantsvszombies/">Plants VS. Zombies</a>
-      <a class="game-link" href="ducklife/">Ducklife</a>
-      <a class="game-link" href="crossyroad/">Crossy Road</a>
-      <a class="game-link" href="touchaholic/">sus ass game</a>
-      <a class="game-link" href="redball/">Redball
-        <img src="redball.png">
-      </a>
-      <a class="game-link" href="idledice/">Idle Dice</a>
-      <a class="game-link" href="bottle jump/">Bottle Jump 3D</a>
-      <a class="game-link" href="bowling/">3D Bowling</a>
-      <a class="game-link" href="sushi roll/">Sushi Roll</a>
-      <a class="game-link" href="alien/">Alien.io</a>
-      <a class="game-link" href="mazespeedrun/">Maze Speedrun</a>
-      <a class="game-link" href="deadhead/">Dreadhead Parkour</a>
-      <a class="game-link" href="sandtris/">SANDTRIS</a>
-      <a class="game-link" href="blackjack/">Blackjack</a>
-      <a class="game-link" href="minesweeper/">Minesweeper</a>
-      <a class="game-link" href="Mario/">Mario Bros</a>
-      <a class="game-link" href="gladdihoppers/">Gladdihoppers</a>
-      <a class="game-link" href="2048/">2048</a>
-      <a class="game-link" href="Retro Bowl.html">Retro Bowl</a>
-      <a class="game-link" href="Retro Bowl College">Retro Bowl College</a>
-      <a class="game-link" href="dinogame/">Dino Game</a>
-      <a class="game-link" href="stc/">Sort the Court</a>
-      <a class="game-link" href="drivemad/">Drive Mad</a>
-      <a class="game-link" href="soundboard/">SOUNDBOARD!</a>
-      <a class="game-link" href=twiddlefinger/">Twiddlefinger</a>
-      <a class="game-link" href="BasketStars.html">Basketball Stars</a>
-      <a class="game-link" href="RagHit.html">Ragdoll Archers</a>
-      <a class="game-link" href="RagArch.html">Ragdoll Hit</a>
-
+      <!-- Add your games here as before -->
     </section>
   </main>
 
-
   <!-- FOOTER -->
   <footer>
-    <p>&copy; 2026 The gn-sci Foundation. All rights reserved.</p>
+    <p>&copy; 2025 The gn-sci Foundation. All rights reserved.</p>
   </footer>
 
-
-  <!-- ========================= -->
   <!-- BUY TOKENS MODAL -->
-  <!-- ========================= -->
-
   <div class="modal" id="buyModal">
     <div class="modal-content">
       <h2>Buy Tokens</h2>
@@ -262,27 +181,16 @@
     </div>
   </div>
 
-
-  <!-- ========================= -->
   <!-- AUTH MODAL -->
-  <!-- ========================= -->
-
   <div class="modal" id="authModal">
     <div class="modal-content">
       <h2>Login / Sign Up</h2>
-
       <input type="email" id="authEmail" placeholder="Email"><br><br>
       <input type="password" id="authPassword" placeholder="Password"><br><br>
-
       <button id="loginBtn">Login</button>
       <button id="signupBtn">Sign Up</button>
-
     </div>
   </div>
-
-
-  <!-- SCRIPT -->
-  <script type="module" src="script.js"></script>
 
 </body>
 </html>
