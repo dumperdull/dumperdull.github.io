@@ -4,7 +4,6 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -17,8 +16,7 @@ import {
   increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
-// 🔥 YOUR REAL CONFIG
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDV9R-csa_sdepCy0kt8e8yhZHz77HxY9w",
   authDomain: "gn-sci.firebaseapp.com",
@@ -33,140 +31,118 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
 // ----------------------------
-// UI ELEMENTS
+// UI Elements
 // ----------------------------
-
 const tokenAmountEl = document.getElementById("tokenAmount");
 const tokenDisplay = document.getElementById("tokenDisplay");
 const buyTokensBtn = document.getElementById("buyTokensBtn");
+const buyModal = document.getElementById("buyModal");
+const buyConfirmBtn = document.getElementById("buyConfirmBtn");
+const closeBuyModal = document.getElementById("closeBuyModal");
 
 const authModal = document.getElementById("authModal");
-const buyModal = document.getElementById("buyModal");
-
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
-const closeModalBtn = document.getElementById("closeModal");
+const closeAuthModal = document.getElementById("closeAuthModal");
 
+const searchBar = document.getElementById("searchBar");
+const gameLinks = document.querySelectorAll(".game-link");
+const themeToggle = document.getElementById("themeToggle");
 
 // ----------------------------
-// AUTH STATE LISTENER
+// AUTH STATE
 // ----------------------------
-
-onAuthStateChanged(auth, async (user) => {
-
-  if (user) {
-    const userRef = doc(db, "users", user.uid);
+onAuthStateChanged(auth, async user => {
+  if(user){
+    const userRef = doc(db,"users",user.uid);
     const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        tokens: 100   // Give 100 starting tokens
-      });
-
+    if(!snap.exists()){
+      await setDoc(userRef,{tokens:100});
       tokenAmountEl.textContent = 100;
     } else {
       tokenAmountEl.textContent = snap.data().tokens || 0;
     }
-
     tokenDisplay.style.display = "flex";
-
   } else {
     tokenDisplay.style.display = "none";
   }
-
 });
 
-
-// ----------------------------
-// OPEN AUTH WHEN CLICKING TOKEN AREA IF NOT LOGGED IN
-// ----------------------------
-
-tokenDisplay.addEventListener("click", () => {
-  if (!auth.currentUser) {
-    authModal.classList.add("show");
-  }
+// Open login if clicking token display
+tokenDisplay.addEventListener("click",()=>{
+  if(!auth.currentUser) authModal.classList.add("show");
 });
 
-
-// ----------------------------
-// BUY TOKENS BUTTON
-// ----------------------------
-
-buyTokensBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-
-  if (!auth.currentUser) {
+// Buy tokens
+buyTokensBtn.addEventListener("click",()=>{
+  if(!auth.currentUser){
     authModal.classList.add("show");
     return;
   }
-
   buyModal.classList.add("show");
 });
 
+// Close modals
+closeBuyModal.addEventListener("click",()=>buyModal.classList.remove("show"));
+closeAuthModal.addEventListener("click",()=>authModal.classList.remove("show"));
 
-// ----------------------------
-// CLOSE BUY MODAL
-// ----------------------------
-
-closeModalBtn.addEventListener("click", () => {
-  buyModal.classList.remove("show");
-});
-
-
-// ----------------------------
-// SIGN UP
-// ----------------------------
-
-signupBtn.addEventListener("click", async () => {
-  const email = document.getElementById("authEmail").value;
-  const password = document.getElementById("authPassword").value;
-
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    authModal.classList.remove("show");
-  } catch (err) {
-    alert(err.message);
-  }
-});
-
-
-// ----------------------------
-// LOGIN
-// ----------------------------
-
-loginBtn.addEventListener("click", async () => {
-  const email = document.getElementById("authEmail").value;
-  const password = document.getElementById("authPassword").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    authModal.classList.remove("show");
-  } catch (err) {
-    alert(err.message);
-  }
-});
-
-
-// ----------------------------
-// TEMPORARY: Add 10 Tokens When Buying (for testing)
-// ----------------------------
-
-buyModal.addEventListener("click", async (e) => {
-  if (e.target === buyModal) return;
-
+// Add tokens
+buyConfirmBtn.addEventListener("click", async ()=>{
   const user = auth.currentUser;
-  if (!user) return;
-
-  const userRef = doc(db, "users", user.uid);
-
-  await updateDoc(userRef, {
-    tokens: increment(10)
-  });
-
+  if(!user) return;
+  const userRef = doc(db,"users",user.uid);
+  await updateDoc(userRef,{tokens:increment(10)});
   const snap = await getDoc(userRef);
   tokenAmountEl.textContent = snap.data().tokens;
-
   buyModal.classList.remove("show");
 });
+
+// Sign up
+signupBtn.addEventListener("click", async ()=>{
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  try{
+    await createUserWithEmailAndPassword(auth,email,password);
+    authModal.classList.remove("show");
+  } catch(err){ alert(err.message); }
+});
+
+// Login
+loginBtn.addEventListener("click", async ()=>{
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+    authModal.classList.remove("show");
+  } catch(err){ alert(err.message); }
+});
+
+// ----------------------------
+// SEARCH FILTER
+// ----------------------------
+searchBar.addEventListener("input", e => {
+  const term = e.target.value.toLowerCase();
+  gameLinks.forEach(link => {
+    const text = link.textContent.toLowerCase();
+    link.style.display = text.includes(term) ? "flex" : "none";
+  });
+});
+
+// ----------------------------
+// DAY/NIGHT THEME TOGGLE
+// ----------------------------
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  // Optional: store theme in localStorage
+  if(document.body.classList.contains("light")){
+    localStorage.setItem("theme","light");
+  } else {
+    localStorage.setItem("theme","dark");
+  }
+});
+
+// Load saved theme on page load
+if(localStorage.getItem("theme") === "light"){
+  document.body.classList.add("light");
+}
