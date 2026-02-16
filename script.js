@@ -20,12 +20,13 @@ import {
 
 // 🔥 YOUR REAL CONFIG
 const firebaseConfig = {
-  apiKey: "PASTE",
-  authDomain: "PASTE",
-  projectId: "PASTE",
-  storageBucket: "PASTE",
-  messagingSenderId: "PASTE",
-  appId: "PASTE"
+  apiKey: "AIzaSyDV9R-csa_sdepCy0kt8e8yhZHz77HxY9w",
+  authDomain: "gn-sci.firebaseapp.com",
+  projectId: "gn-sci",
+  storageBucket: "gn-sci.firebasestorage.app",
+  messagingSenderId: "415043872292",
+  appId: "1:415043872292:web:a9dd0a06270e4f83db1ab1",
+  measurementId: "G-HGXJGSGPZC"
 };
 
 const app = initializeApp(firebaseConfig);
