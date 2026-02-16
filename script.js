@@ -1,22 +1,24 @@
 // 🔥 Firebase Imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged 
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { 
-  getFirestore, 
-  doc, 
-  setDoc, 
+import {
+  getFirestore,
+  doc,
+  setDoc,
   getDoc,
-  updateDoc 
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🔥 Your Config
+
+// 🔥 YOUR REAL CONFIG
 const firebaseConfig = {
   apiKey: "PASTE",
   authDomain: "PASTE",
@@ -30,68 +32,140 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+
 // ----------------------------
-// TOKEN UI REFERENCES
+// UI ELEMENTS
 // ----------------------------
 
 const tokenAmountEl = document.getElementById("tokenAmount");
 const tokenDisplay = document.getElementById("tokenDisplay");
+const buyTokensBtn = document.getElementById("buyTokensBtn");
+
+const authModal = document.getElementById("authModal");
+const buyModal = document.getElementById("buyModal");
+
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const closeModalBtn = document.getElementById("closeModal");
+
 
 // ----------------------------
-// AUTH STATE
+// AUTH STATE LISTENER
 // ----------------------------
 
 onAuthStateChanged(auth, async (user) => {
+
   if (user) {
     const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+    const snap = await getDoc(userRef);
 
-    if (!userSnap.exists()) {
+    if (!snap.exists()) {
       await setDoc(userRef, {
-        tokens: 0,
-        createdAt: new Date()
+        tokens: 100   // Give 100 starting tokens
       });
-      tokenAmountEl.textContent = 0;
+
+      tokenAmountEl.textContent = 100;
     } else {
-      tokenAmountEl.textContent = userSnap.data().tokens;
+      tokenAmountEl.textContent = snap.data().tokens || 0;
     }
 
     tokenDisplay.style.display = "flex";
+
   } else {
     tokenDisplay.style.display = "none";
   }
+
 });
 
+
 // ----------------------------
-// SIMPLE LOGIN SYSTEM
+// OPEN AUTH WHEN CLICKING TOKEN AREA IF NOT LOGGED IN
 // ----------------------------
 
-window.signup = async (email, password) => {
-  await createUserWithEmailAndPassword(auth, email, password);
-};
-
-window.login = async (email, password) => {
-  await signInWithEmailAndPassword(auth, email, password);
-};
-
-window.logout = async () => {
-  await signOut(auth);
-};
-
-const authModal = document.getElementById("authModal");
-const loginBtn = document.getElementById("loginBtn");
-const signupBtn = document.getElementById("signupBtn");
-
-loginBtn.addEventListener("click", async () => {
-  const email = document.getElementById("authEmail").value;
-  const password = document.getElementById("authPassword").value;
-  await login(email, password);
-  authModal.classList.remove("show");
+tokenDisplay.addEventListener("click", () => {
+  if (!auth.currentUser) {
+    authModal.classList.add("show");
+  }
 });
+
+
+// ----------------------------
+// BUY TOKENS BUTTON
+// ----------------------------
+
+buyTokensBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  if (!auth.currentUser) {
+    authModal.classList.add("show");
+    return;
+  }
+
+  buyModal.classList.add("show");
+});
+
+
+// ----------------------------
+// CLOSE BUY MODAL
+// ----------------------------
+
+closeModalBtn.addEventListener("click", () => {
+  buyModal.classList.remove("show");
+});
+
+
+// ----------------------------
+// SIGN UP
+// ----------------------------
 
 signupBtn.addEventListener("click", async () => {
   const email = document.getElementById("authEmail").value;
   const password = document.getElementById("authPassword").value;
-  await signup(email, password);
-  authModal.classList.remove("show");
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    authModal.classList.remove("show");
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+
+// ----------------------------
+// LOGIN
+// ----------------------------
+
+loginBtn.addEventListener("click", async () => {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    authModal.classList.remove("show");
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+
+// ----------------------------
+// TEMPORARY: Add 10 Tokens When Buying (for testing)
+// ----------------------------
+
+buyModal.addEventListener("click", async (e) => {
+  if (e.target === buyModal) return;
+
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userRef = doc(db, "users", user.uid);
+
+  await updateDoc(userRef, {
+    tokens: increment(10)
+  });
+
+  const snap = await getDoc(userRef);
+  tokenAmountEl.textContent = snap.data().tokens;
+
+  buyModal.classList.remove("show");
 });
