@@ -3,194 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>gn-sci</title>
-  <link rel="shortcut icon" href="favicon.ico">
+  <title>GN-Sci Portal</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-    import { 
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // ----------------------------
-    // Firebase Config
-    // ----------------------------
-    const firebaseConfig = {
-      apiKey: "AIzaSyDV9R-csa_sdepCy0kt8e8yhZHz77HxY9w",
-      authDomain: "gn-sci.firebaseapp.com",
-      projectId: "gn-sci",
-      storageBucket: "gn-sci.firebasestorage.app",
-      messagingSenderId: "415043872292",
-      appId: "1:415043872292:web:a9dd0a06270e4f83db1ab1",
-      measurementId: "G-HGXJGSGPZC"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // ----------------------------
-    // DOM References
-    // ----------------------------
-    const tokenAmountEl = document.getElementById("tokenAmount");
-    const tokenDisplay = document.getElementById("tokenDisplay");
-    const buyTokensBtn = document.getElementById("buyTokensBtn");
-    const buyModal = document.getElementById("buyModal");
-    const closeModal = document.getElementById("closeModal");
-    const authModal = document.getElementById("authModal");
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
-
-    // ----------------------------
-    // AUTH STATE
-    // ----------------------------
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
-          await setDoc(userRef, { tokens: 0, createdAt: new Date() });
-          tokenAmountEl.textContent = 0;
-        } else {
-          tokenAmountEl.textContent = userSnap.data().tokens;
-        }
-
-        tokenDisplay.style.display = "flex";
-      } else {
-        tokenDisplay.style.display = "none";
-      }
-    });
-
-    // ----------------------------
-    // AUTH FUNCTIONS
-    // ----------------------------
-    async function signup(email, password) {
-      await createUserWithEmailAndPassword(auth, email, password);
-    }
-
-    async function login(email, password) {
-      await signInWithEmailAndPassword(auth, email, password);
-    }
-
-    async function logout() {
-      await signOut(auth);
-    }
-
-    loginBtn.addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value;
-      const password = document.getElementById("authPassword").value;
-      await login(email, password);
-      authModal.classList.remove("show");
-    });
-
-    signupBtn.addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value;
-      const password = document.getElementById("authPassword").value;
-      await signup(email, password);
-      authModal.classList.remove("show");
-    });
-
-    // ----------------------------
-    // BUY TOKENS BUTTON
-    // ----------------------------
-    buyTokensBtn.addEventListener("click", () => {
-      buyModal.classList.add("show");
-    });
-    closeModal.addEventListener("click", () => {
-      buyModal.classList.remove("show");
-    });
-
-    // ----------------------------
-    // THEME TOGGLE
-    // ----------------------------
-    const themeToggle = document.getElementById("themeToggle");
-    themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("light");
-    });
-
-    // ----------------------------
-    // PARTICLE BACKGROUND
-    // ----------------------------
-    const particleContainer = document.getElementById("particle-container");
-    for(let i=0; i<50; i++){
-      const p = document.createElement("div");
-      p.className = "particle";
-      p.style.left = Math.random()*100 + "vw";
-      p.style.animationDuration = 5+Math.random()*5 + "s";
-      p.style.width = p.style.height = 2+Math.random()*4 + "px";
-      particleContainer.appendChild(p);
-    }
-  </script>
 </head>
 <body>
 
-  <!-- PARTICLE BACKGROUND -->
+  <!-- Particle background -->
   <div id="particle-container"></div>
 
-  <!-- NAVBAR -->
+  <!-- Navbar -->
   <nav class="navbar">
-    <h2 class="logo">🎮 gn-sci</h2>
+    <div class="logo">GN-Sci</div>
     <div class="nav-right">
-      <div class="token-display" id="tokenDisplay">
-        🪙 <span id="tokenAmount">0</span>
-        <button class="token-plus" id="buyTokensBtn">+</button>
+      <div id="tokenDisplay" class="token-display">
+        <span id="tokenAmount">0</span> 💰
+        <button id="buyTokensBtn" class="token-plus">+</button>
       </div>
-      <button class="theme-toggle" id="themeToggle">🌙</button>
+      <button class="theme-toggle" id="themeToggle">🌗</button>
     </div>
   </nav>
 
-  <!-- HEADER -->
+  <!-- Header -->
   <header>
-    <h1>Welcome to <span class="highlight">gn-sci</span>!</h1>
-    <h3>Last updated: Jan 30, 2026</h3>
-    <br>
-    <button onclick="authModal.classList.add('show')">Login / Sign Up</button>
-    <br><br>
-    <a href="https://discord.gg/RmUqgTDccE">Join the Discord!</a>
+    <h1>Welcome to GN-Sci</h1>
+    <h3>Play, Earn, and Explore Science & Games</h3>
+    <p class="note">Click the 💰 icon to check your tokens or buy more!</p>
   </header>
 
-  <!-- SEARCH BAR -->
-  <input type="text" class="search-bar" placeholder="Search any game..." id="searchInput">
+  <!-- Search Bar -->
+  <input type="text" class="search-bar" placeholder="Search games..." id="searchBar">
 
-  <!-- GAME LIST -->
-  <main>
-    <section class="game-list" id="gameList">
-      <!-- Add your games here as before -->
-    </section>
+  <!-- Announcements -->
+  <section class="announcements">
+    <h2>Announcements</h2>
+    <div class="important-announcement">Server Maintenance Tomorrow at 4 PM!</div>
+    <div class="announcements-list">
+      <p><span class="update-date">Feb 15:</span> New game "Red Ball Challenge" added!</p>
+      <p><span class="update-date">Feb 10:</span> Tokens system fully live.</p>
+    </div>
+  </section>
+
+  <!-- Game List -->
+  <main class="game-list">
+    <a href="#" class="game-link">
+      <img src="redball.png" class="game-icon" alt="Red Ball">
+      Red Ball Challenge
+    </a>
+    <a href="#" class="game-link">
+      <img src="bluecube.png" class="game-icon" alt="Blue Cube">
+      Blue Cube Adventure
+    </a>
+    <!-- Add more game links here -->
   </main>
 
-  <!-- FOOTER -->
+  <!-- Footer -->
   <footer>
-    <p>&copy; 2025 The gn-sci Foundation. All rights reserved.</p>
+    &copy; 2026 GN-Sci | Built with 💛
   </footer>
 
-  <!-- BUY TOKENS MODAL -->
-  <div class="modal" id="buyModal">
-    <div class="modal-content">
-      <h2>Buy Tokens</h2>
-      <p>Token packages coming soon.</p>
-      <button id="closeModal">Close</button>
-    </div>
-  </div>
+  <!-- --------------------------
+       Modals
+  -------------------------- -->
 
-  <!-- AUTH MODAL -->
+  <!-- Auth Modal -->
   <div class="modal" id="authModal">
     <div class="modal-content">
       <h2>Login / Sign Up</h2>
-      <input type="email" id="authEmail" placeholder="Email"><br><br>
-      <input type="password" id="authPassword" placeholder="Password"><br><br>
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn">Sign Up</button>
+      <input type="email" id="authEmail" placeholder="Email" style="margin-bottom:10px; width:100%; padding:8px; border-radius:8px; border:none;">
+      <input type="password" id="authPassword" placeholder="Password" style="margin-bottom:10px; width:100%; padding:8px; border-radius:8px; border:none;">
+      <button id="loginBtn" style="margin-right:10px; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">Login</button>
+      <button id="signupBtn" style="padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">Sign Up</button>
     </div>
   </div>
 
+  <!-- Buy Tokens Modal -->
+  <div class="modal" id="buyModal">
+    <div class="modal-content">
+      <h2>Buy Tokens</h2>
+      <p>Click anywhere below to add 10 tokens (testing)</p>
+      <button id="closeModal" style="margin-top:15px; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <!-- Firebase JS -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
